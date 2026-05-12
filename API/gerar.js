@@ -1,29 +1,14 @@
 export default async function handler(req, res) {
 
-    let prompt = `Você é um designer web premiado e Programador. 
-Crie uma landing page COMPLETA e VISUALMENTE IMPRESSIONANTE para o negócio descrito.
-
-Regras de resposta:
-- Responda SOMENTE com HTML e CSS puros
-- Não use crases, markdown ou explicações
-- Não use tags <img>
-
-Identidade visual:
-- Invente uma paleta de cores única
-- Escolha uma Google Font marcante via @import
-- Use emojis grandes
-- Use CSS moderno
-
-Estrutura:
-- Header
-- Hero
-- Diferenciais
-- Depoimento
-- Footer`
+    if (req.method !== "POST") {
+        return res.status(405).json({
+            erro: "Método não permitido"
+        })
+    }
 
     try {
 
-        let resposta = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const resposta = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -34,7 +19,10 @@ Estrutura:
                 messages: [
                     {
                         role: "system",
-                        content: prompt
+                        content: `Você é um designer web premiado e Programador.
+Crie uma landing page COMPLETA e VISUALMENTE IMPRESSIONANTE.
+
+Responda SOMENTE com HTML e CSS puros.`
                     },
                     {
                         role: "user",
@@ -44,13 +32,13 @@ Estrutura:
             })
         })
 
-        let dados = await resposta.json()
+        const dados = await resposta.json()
 
-        res.status(200).json(dados)
+        return res.status(200).json(dados)
 
     } catch (erro) {
 
-        res.status(500).json({
+        return res.status(500).json({
             erro: erro.message
         })
 
